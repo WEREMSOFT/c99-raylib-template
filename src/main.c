@@ -40,13 +40,13 @@ int main(void){
                 DrawGrid(10, 1);
             } EndMode3D();
 
-            if(IsKeyDown(KEY_KP_ADD)) camera.fovy +=        1.0f;
-            if(IsKeyDown(KEY_KP_SUBTRACT)) camera.fovy -=   1.0f;
+            if(IsKeyDown(KEY_KP_ADD)) camera.fovy += 1.0f;
+            if(IsKeyDown(KEY_KP_SUBTRACT)) camera.fovy -= 1.0f;
 
-            if(IsKeyPressed(KEY_LEFT)) cube_position.x -=   1.0f;
-            if(IsKeyPressed(KEY_RIGHT)) cube_position.x +=  1.0f;
-            if(IsKeyPressed(KEY_UP)) cube_position.z -=     1.0f;
-            if(IsKeyPressed(KEY_DOWN)) cube_position.z +=   1.0f;
+            if(IsKeyPressed(KEY_LEFT)) cube_position.x -= 1.0f;
+            if(IsKeyPressed(KEY_RIGHT)) cube_position.x += 1.0f;
+            if(IsKeyPressed(KEY_UP)) cube_position.z -= 1.0f;
+            if(IsKeyPressed(KEY_DOWN)) cube_position.z += 1.0f;
 
         } EndDrawing();
     }
