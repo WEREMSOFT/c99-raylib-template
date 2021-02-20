@@ -28,7 +28,7 @@ ASM_D := asm/
 SRC_FILES := $(wildcard $(SRC_D)*.c)
 OBJ_FILES := $(patsubst $(SRC_D)%.c,$(OBJ_D)%.o,$(SRC_FILES))
 
-RAYLIB_PATH := ./raylib
+RAYLIB_PATH := ./raylib/
 INCLUDE_D := -I$(LIBS_D)include/ -I$(RAYLIB_PATH)/src/
 STATIC_LIBS_D := -L$(LIBS_D)static/ -L$(RAYLIB_PATH)/
 CFLAGS := -O0 -Wpedantic -g -Wall -std=c99 -g3 -DOS_$(DETTECTED_OS) 
@@ -39,7 +39,7 @@ BIN_EXTENSION = bin
 # Vars for emscripten build
 EMSC_CFLAGS := -O2 -s -Wall -std=c99 -D_DEFAULT_SOURCE -Wno-missing-braces -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0 -s USE_GLFW=3 -s TOTAL_MEMORY=67108864 -v -D OS_WEB
 EMSC_CC := emcc
-EMSC_STATIC_LIBS_D := $(RAYLIB_PATH)/libraylib.bc
+EMSC_STATIC_LIBS_D := $(RAYLIB_PATH)src/libraylib.bc
 # EMSC_STATIC_LIBS_D := $(LIBS_D)static/libraylib.bc
 
 # Call to compilers / linkers
@@ -78,8 +78,10 @@ $(OBJ_D)%.o: $(SRC_D)%.c
 raylib:
 	git -C ./raylib clean -dfX
 	echo $(PATH)
-	make PLATFORM=PLATFORM_DESKTOP -C raylib/src
-	make PLATFORM=PLATFORM_WEB PATH=$(PATH) -C raylib/src
+	make PLATFORM=PLATFORM_WEB PATH=$(PATH) -C $(RAYLIB_PATH)src
+	mv $(RAYLIB_PATH)src/libraylib.a $(RAYLIB_PATH)src/libraylib.bc
+	make clean -C $(RAYLIB_PATH)src
+	make PLATFORM=PLATFORM_DESKTOP -C $(RAYLIB_PATH)src
 
 $(TEST_BLD_D)%.spec.$(BIN_EXTENSION): $(TEST_SRC_D)%.spec.c
 	@echo "### Building tests for $(@) START ###"
