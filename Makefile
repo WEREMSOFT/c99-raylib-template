@@ -28,18 +28,18 @@ ASM_D := asm/
 SRC_FILES := $(wildcard $(SRC_D)*.c)
 OBJ_FILES := $(patsubst $(SRC_D)%.c,$(OBJ_D)%.o,$(SRC_FILES))
 
-INCLUDE_D := -I$(LIBS_D)include/
-STATIC_LIBS_D := -L$(LIBS_D)static/
+RAYLIB_PATH := ./raylib
+INCLUDE_D := -I$(LIBS_D)include/ -I$(RAYLIB_PATH)/src/
+STATIC_LIBS_D := -L$(LIBS_D)static/ -L$(RAYLIB_PATH)/
 CFLAGS := -O0 -Wpedantic -g -Wall -std=c99 -g3 -DOS_$(DETTECTED_OS) 
 DEBUGGER := kdbg # Other options: cgdb gdb
 MK_DIR:= mkdir -p
 BIN_EXTENSION = bin
 
 # Vars for emscripten build
-RAYLIB_PATH := /Users/pabloweremczuk/Documents/Proyectos/c/raylib
 EMSC_CFLAGS := -O2 -s -Wall -std=c99 -D_DEFAULT_SOURCE -Wno-missing-braces -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=0 -s USE_GLFW=3 -s TOTAL_MEMORY=67108864 -v -D OS_WEB
 EMSC_CC := emcc
-EMSC_STATIC_LIBS_D := $(LIBS_D)static/libraylib.bc
+EMSC_STATIC_LIBS_D := $(RAYLIB_PATH)/libraylib.bc
 # EMSC_STATIC_LIBS_D := $(LIBS_D)static/libraylib.bc
 
 # Call to compilers / linkers
@@ -63,9 +63,9 @@ endif
 # Build Targets
 #//////////////
 
-.PHONY: web test run_% debug_optimized debug_unoptimized print_information create_folder_structure run_html_u run_html_o run_performance_test init_project
+.PHONY: raylib web test run_% debug_optimized debug_unoptimized print_information create_folder_structure run_html_u run_html_o run_performance_test init_project
 
-all: print_information $(BLD_D)main.$(BIN_EXTENSION) web
+all: raylib print_information $(BLD_D)main.$(BIN_EXTENSION) web
 
 main: $(OBJ_FILES)
 	$(CC_COMMAND) -o $(BLD_D)$@.bin $^ $(LINK_LIBS)
@@ -74,6 +74,12 @@ web: $(HTML_D)main.html
 
 $(OBJ_D)%.o: $(SRC_D)%.c
 	$(CC_COMMAND) -c -o $@ $^
+
+raylib:
+	git -C ./raylib clean -dfX
+	echo $(PATH)
+	make PLATFORM=PLATFORM_DESKTOP -C raylib/src
+	make PLATFORM=PLATFORM_WEB PATH=$(PATH) -C raylib/src
 
 $(TEST_BLD_D)%.spec.$(BIN_EXTENSION): $(TEST_SRC_D)%.spec.c
 	@echo "### Building tests for $(@) START ###"
